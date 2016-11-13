@@ -45,6 +45,35 @@ func ExampleSearch() {
 	// Title: "The Best James Bond Car Chase Scenes" Description: "A compilation of the Best James Bond Car Chase Scenes! Try guessing the films if you are a James Bond fan ;) Subscribe to The Wheels and Chips Journal!" Id: "uS9BFHgNQag"
 }
 
+func ExampleSearchRelatedToVideo() {
+	client, err := youtube.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	param := &youtube.SearchParam{
+		MaxPage:           1,
+		MaxResultsPerPage: 10,
+		RelatedToVideo:    "vuUIoPVRpmk",
+	}
+
+	pagesChan, err := client.Search(param)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for page := range pagesChan {
+		if page.Err != nil {
+			log.Fatal(page.Err)
+		}
+		for _, item := range page.Items {
+			snippet := item.Snippet
+			videoId := item.Id.VideoId
+			fmt.Printf("Title: %q Description: %q Id: %q\n", snippet.Title, snippet.Description, videoId)
+		}
+	}
+}
+
 func ExampleMostPopular() {
 	client, err := youtube.New()
 	if err != nil {
