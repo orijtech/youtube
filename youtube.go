@@ -29,20 +29,10 @@ var (
 )
 
 func clientWithKey(key string) (*Client, error) {
-	httpClient := &http.Client{
+	hc := &http.Client{
 		Transport: &googleapiTransport.APIKey{Key: key},
 	}
-
-	service, err := youtube.New(httpClient)
-	if err != nil {
-		return nil, err
-	}
-
-	client := new(Client)
-	client.apiKey = key
-	client.service = service
-
-	return client, nil
+	return NewWithHTTPClient(hc)
 }
 
 // New returns a client with an API Key derived
@@ -62,6 +52,19 @@ func NewWithKey(apiKey string) (*Client, error) {
 		return nil, errEmptyAPIKey
 	}
 	return clientWithKey(envResolvedKey)
+}
+
+func NewWithHTTPClient(hc *http.Client) (*Client, error) {
+	service, err := youtube.New(hc)
+	if err != nil {
+		return nil, err
+	}
+
+	client := new(Client)
+	client.service = service
+
+	return client, nil
+
 }
 
 type SearchParam struct {
