@@ -1,10 +1,11 @@
 package youtube_test
 
 import (
+	"context"
 	"fmt"
 	"log"
 
-	"github.com/odeke-em/youtube"
+	"github.com/orijtech/youtube"
 )
 
 func ExampleSearch() {
@@ -19,7 +20,7 @@ func ExampleSearch() {
 		MaxResultsPerPage: 2,
 	}
 
-	pagesChan, err := client.Search(param)
+	pagesChan, err := client.Search(context.Background(), param)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,10 +55,10 @@ func ExampleSearchRelatedToVideo() {
 	param := &youtube.SearchParam{
 		MaxPage:           1,
 		MaxResultsPerPage: 10,
-		RelatedToVideo:    "vuUIoPVRpmk",
+		RelatedToVideoId:  "vuUIoPVRpmk",
 	}
 
-	pagesChan, err := client.Search(param)
+	pagesChan, err := client.Search(context.Background(), param)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -85,7 +86,7 @@ func ExampleMostPopular() {
 		MaxResultsPerPage: 10,
 	}
 
-	videoPages, err := client.MostPopular(param)
+	videoPages, err := client.MostPopular(context.Background(), param)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,7 +111,7 @@ func ExampleById() {
 		log.Fatal(err)
 	}
 
-	videoPages, err := client.ById("Bpcupsxy0T8", "FLeMssD0R3Y", "Jv95aptVSUk", "rTAZlHGOVo8")
+	videoPages, err := client.ById(context.Background(), "Bpcupsxy0T8", "FLeMssD0R3Y", "Jv95aptVSUk", "rTAZlHGOVo8")
 	if err != nil {
 		log.Fatal(err)
 	}

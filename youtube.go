@@ -1,6 +1,7 @@
 package youtube
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -105,21 +106,21 @@ type ResultsPage struct {
 
 var videoListFields = "id,snippet,statistics"
 
-func (c *Client) ById(ids ...string) (chan *ResultsPage, error) {
+func (c *Client) ById(ctx context.Context, ids ...string) (chan *ResultsPage, error) {
 	idsCSV := strings.Join(ids, ",")
 	req := c.service.Videos.List(videoListFields).Id(idsCSV)
-	return c.doVideos(req, nil)
+	return c.doVideos(ctx, req, nil)
 }
 
 // MostPopular returns the currently most popular videos.
 // Specifying MaxPage, MaxResultsPerPage help
 // control how many items should be retrieved.
-func (c *Client) MostPopular(param *SearchParam) (chan *ResultsPage, error) {
+func (c *Client) MostPopular(ctx context.Context, param *SearchParam) (chan *ResultsPage, error) {
 	req := c.service.Videos.List(videoListFields).Chart("mostPopular")
-	return c.doVideos(req, param)
+	return c.doVideos(ctx, req, param)
 }
 
-func (c *Client) doVideos(req *youtube.VideosListCall, param *SearchParam) (chan *ResultsPage, error) {
+func (c *Client) doVideos(ctx context.Context, req *youtube.VideosListCall, param *SearchParam) (chan *ResultsPage, error) {
 	pagesChan := make(chan *ResultsPage)
 
 	if param == nil {
@@ -138,6 +139,7 @@ func (c *Client) doVideos(req *youtube.VideosListCall, param *SearchParam) (chan
 		pageIndex := uint64(0)
 		itemsCount := uint64(0)
 		pageToken := param.PageToken
+		req = req.Context(ctx)
 
 		for {
 			if maxRequestedItems > 0 && itemsCount >= maxRequestedItems {
@@ -187,7 +189,7 @@ func (c *Client) doVideos(req *youtube.VideosListCall, param *SearchParam) (chan
 	return pagesChan, nil
 }
 
-func (c *Client) Search(param *SearchParam) (chan *SearchPage, error) {
+func (c *Client) Search(ctx context.Context, param *SearchParam) (chan *SearchPage, error) {
 	pagesChan := make(chan *SearchPage)
 
 	go func() {
@@ -204,6 +206,7 @@ func (c *Client) Search(param *SearchParam) (chan *SearchPage, error) {
 		if maxResultsPerPage > 0 {
 			req = req.MaxResults(int64(maxResultsPerPage))
 		}
+		req = req.Context(ctx)
 
 		if param.RelatedToVideoId != "" {
 			// When RelatedToVideo is used, we must set Type to "video"
