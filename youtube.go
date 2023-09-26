@@ -104,7 +104,7 @@ type ResultsPage struct {
 	Items []*youtube.Video
 }
 
-var videoListFields = "id,snippet,statistics"
+var videoListFields = []string{"id", "snippet", "statistics"}
 
 func (c *Client) ById(ctx context.Context, ids ...string) (chan *ResultsPage, error) {
 	idsCSV := strings.Join(ids, ",")
@@ -202,7 +202,7 @@ func (c *Client) Search(ctx context.Context, param *SearchParam) (chan *SearchPa
 		maxResultsPerPage := param.MaxResultsPerPage
 		maxRequestedItems := param.MaxRequestedItems
 
-		req := c.service.Search.List("id,snippet").Q(query)
+		req := c.service.Search.List([]string{"id", "snippet"}).Q(query)
 		if maxResultsPerPage > 0 {
 			req = req.MaxResults(int64(maxResultsPerPage))
 		}
