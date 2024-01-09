@@ -49,7 +49,7 @@ func ExampleSearch() {
 func ExampleSearchRelatedToVideo() {
 	client, err := youtube.New()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	param := &youtube.SearchParam{
@@ -60,7 +60,7 @@ func ExampleSearchRelatedToVideo() {
 
 	pagesChan, err := client.Search(context.Background(), param)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	for page := range pagesChan {
