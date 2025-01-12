@@ -85,10 +85,6 @@ type SearchParam struct {
 	// MaxRequestedItems is the threshold for the number
 	// of items that you'd like to stop the search after.
 	MaxRequestedItems uint64 `json:"max_requested_items"`
-
-	// RelatedToVideoId is the id for whose
-	// related videos you'd like returned
-	RelatedToVideoId string `json:"related_to_video_id"`
 }
 
 type SearchPage struct {
@@ -207,11 +203,6 @@ func (c *Client) Search(ctx context.Context, param *SearchParam) (chan *SearchPa
 			req = req.MaxResults(int64(maxResultsPerPage))
 		}
 		req = req.Context(ctx)
-
-		if param.RelatedToVideoId != "" {
-			// When RelatedToVideo is used, we must set Type to "video"
-			req = req.RelatedToVideoId(param.RelatedToVideoId).Type("video")
-		}
 
 		pageIndex := uint64(0)
 		itemsCount := uint64(0)
